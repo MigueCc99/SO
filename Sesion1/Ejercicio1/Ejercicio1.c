@@ -24,27 +24,29 @@ int main(int argc, char *argv[]){
 		fd_leer = STDIN_FILENO;
 	}
 
-	fd_escribir = open("salida.txt", O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR);
-
-	if (fd_escribir < 0){
+	if ((fd_escribir = open("salida.txt", O_CREAT|O_TRUNC|O_WRONLY, S_IRUSR|S_IWUSR)) < 0){
 		printf("\nError %d en open del fichero de salida", errno);
 		perror("\nError en open");
-		exit(-1);
+		exit(EXIT_FAILURE);
 	}
 
 	int i = 0;
 	while((leidos = read(fd_leer, buf, 80)) == 80){
-		sprintf(tmpstr, "\nBLOQUE%d\n", i);
+		sprintf(tmpstr, "\nBLOQUE%d\n\n", i);
 		i++;
 		write(fd_escribir, tmpstr, strlen(tmpstr));
 		write(fd_escribir, buf, 80);
 	}
 
-	sprintf(tmpstr, "BLOQUE%d\n", i);
+	sprintf(tmpstr, "\nBLOQUE%d\n\n", i);
 	write(fd_escribir, tmpstr, strlen(tmpstr));
 	write(fd_escribir, buf, 80);
 
-	lseek(fd_escribir, 0, SEEK_SET);
+	if(lseek(fd_escribir, 0, SEEK_SET) < 0){
+		perror("\nError en lseek");
+		exit(EXIT_FAILURE);
+	}
+	
 	sprintf(tmpstr, "El numero de bloques leidos es %d\n", i);
 	write(fd_escribir, tmpstr, strlen(tmpstr));
 
