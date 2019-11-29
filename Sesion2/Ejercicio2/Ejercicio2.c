@@ -10,13 +10,14 @@
  * 	y se muestre una lista de los archivos cambiados indicando los permisos antiguos y los nuevos
  */
 
-
 #include <unistd.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <dirent.h>
+
+// PRIMERA FORMA 
 
 int main(int argc, char *argv[]){
 	// Declaración de variables
@@ -85,3 +86,143 @@ int main(int argc, char *argv[]){
 	return 0;
 
 }
+
+
+/*
+#include<sys/types.h> 
+#include<sys/stat.h>
+#include<fcntl.h> 
+#include<string.h> 
+#include<stdlib.h> 
+#include<stdio.h>
+#include<errno.h> 
+#include<unistd.h> 
+#include<dirent.h>
+
+int main(int argc, char *argv[]){
+	DIR *direct;
+	unsigned int permisos;
+	char *pathname;
+	struct stat atributos;
+	struct dirent *ed;
+	char cadena[100];
+	char cadena2[100];
+	extern int errno;
+
+	if(argc == 3){
+		pathname = argv[1];
+		direct = opendir(pathname);
+		permisos = strtol(argv[2],NULL,8);
+	}
+	else{
+		printf("Uso: ./Ejercicio1 <pathname> <permisos>\n");
+		exit(-1);
+	}
+
+	readdir(direct);
+
+	while((ed = readdir(direct)) != NULL){
+		sprintf(cadena,"%s/%s",pathname,ed->d_name);
+
+		if(stat(cadena,&atributos) < 0){
+			printf("Error al intentar acceder a los atributos del archivo");
+			perror("\nError en lstat");
+			exit(-1);
+		}
+
+		if(S_ISREG(atributos.st_mode)){
+			sprintf(cadena2,"%s",ed->d_name);
+
+			printf("%s: %o",cadena2,atributos.st_mode);
+
+			chmod(cadena,permisos);
+
+			if(chmod(cadena,permisos) < 0)
+				printf("Error: %s\n",strerror(errno));
+			else{
+				stat(cadena,&atributos);
+				printf("%o \n",atributos.st_mode);
+			}
+		}
+	}
+	closedir(direct);
+	return 0;
+}
+*/
+
+
+/* SEGUNDA FORMA */
+/*
+#include<dirent.h>
+#include<sys/types.h>
+#include<sys/stat.h>
+#include<fcntl.h>
+#include<string.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<errno.h>
+#include<unistd.h>
+
+int main(int argc, char * argv[])
+{
+
+	DIR * direct;
+	unsigned int permisos;
+	char * pathname;
+	struct dirent * puntero;
+	char cadena[100];
+	char cadena2[400];
+	struct stat atributos;
+
+	if (argc != 3){
+		printf("ERROR, se deben introducir %d argumentos\n", 2);
+		exit(1);
+	}
+
+	pathname = argv[1];
+	permisos = strtol(argv[2], NULL, 8);
+	direct = opendir(pathname);
+
+	if (direct == NULL){
+		printf("ERROR, no se ha podido abrir el directorio\n");
+		exit(2);
+	}
+
+	readdir(direct); // Abrimos la lectura del directorio
+	puntero = readdir(direct); // Leemos el archivo /. del directorio
+
+	while ((puntero = readdir(direct)) != NULL) {
+		sprintf(cadena, "%s%s", pathname, puntero->d_name);
+
+		if(stat(cadena, &atributos) < 0){
+			printf("ERROR, no se ha podido acceder a los metadatos de ");
+			printf(cadena);
+			printf("\n");
+			exit(3);
+		}
+
+		sprintf(cadena2, "%s", puntero->d_name);
+		
+		if (chmod(cadena, permisos) < 0){
+			printf("ERROR, no se ha podido realizar el cambio de permisos para el archivo ");
+			printf("%s: %d %o", cadena2, errno, atributos.st_mode);
+			printf("\n");
+		}
+
+		else {
+			stat(cadena, &atributos);
+			printf("%s: %o ", cadena2, atributos.st_mode);
+			printf("%o \n", atributos.st_mode);
+		}
+	}
+		
+	closedir(direct);
+}
+*/
+
+
+
+
+
+
+

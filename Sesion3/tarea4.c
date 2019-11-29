@@ -22,7 +22,7 @@ if(write(STDOUT_FILENO,buf,sizeof(buf)+1) != sizeof(buf)+1) {
 	perror("\nError en write");
 	exit(EXIT_FAILURE);
 }
-//(1)if(setvbuf(stdout,NULL,_IONBF,0)) {
+//(1)if(setvbuf(stdout,NULL,_IONBF,0)) {	// Especifica un buffer para la salida
 //	perror("\nError en setvbuf");
 //}
 printf("\nMensaje previo a la ejecución de fork");

@@ -25,7 +25,8 @@ int main(int argc, char *argv[]){
 			perror("\nError en el lstat");
 		}
 		else{
-			if(S_ISREG2(atributos.st_mode)) strcpy(tipoArchivo,"Regular");
+			if(S_ISREG2(atributos.st_mode)) 
+				strcpy(tipoArchivo,"Regular");
 			printf("%s\n",tipoArchivo);
 		}
 	}
